@@ -30,8 +30,9 @@ const requestListener = (req, res) => {
   });
 
   if (req.url == '/todos' && req.method == 'GET') {
-    // getTodo.js
+    getTodo(res);
   } else if (req.url == '/todos' && req.method == 'POST') {
+    postTodo(res);
     // postTodo.js
   } else if (req.url == '/todos' && req.method == 'DELETE') {
     // deleteTodo.js
