@@ -19,7 +19,7 @@ mongoose
     console.log('connect success');
   })
   .catch((error) => {
-    console.log(error.reason);
+    console.error(error.reason);
   });
 
 const requestListener = (req, res) => {
