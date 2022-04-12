@@ -32,7 +32,9 @@ const requestListener = (req, res) => {
   if (req.url == '/todos' && req.method == 'GET') {
     getTodo(res);
   } else if (req.url == '/todos' && req.method == 'POST') {
-    postTodo(res);
+    req.on('end', () => {
+      postTodo(res, body);
+    });
     // postTodo.js
   } else if (req.url == '/todos' && req.method == 'DELETE') {
     // deleteTodo.js
