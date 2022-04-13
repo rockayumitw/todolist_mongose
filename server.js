@@ -36,11 +36,13 @@ const requestListener = (req, res) => {
       postTodo(res, body);
     });
   } else if (req.url == '/todos' && req.method == 'DELETE') {
-    // deleteTodo.js
+    deleteTodo(res);
   } else if (req.url.startsWith('/todos/') && req.method == 'DELETE') {
-    // deleteTodo.js
+    deleteTodo(res, req.url);
   } else if (req.url.startsWith('/todos/') && req.method == 'PATCH') {
-    // patchTodo.js
+    req.on('end', () => {
+      patchTodo(res, req.url, body);
+    });
   } else if (req.method == 'OPTIONS') {
     successHandle(res, {});
   } else {
