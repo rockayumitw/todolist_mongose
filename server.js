@@ -1,10 +1,8 @@
 const http = require('http');
 const mongoose = require('mongoose');
-const { header } = require('./config');
 const dotenv = require('dotenv');
 const { errorHandle, successHandle } = require('./handler');
 const { getTodo, postTodo, deleteTodo, patchTodo } = require('./logic');
-const Todo = require('./models/todos');
 
 dotenv.config({ path: './config.env' });
 const DB = process.env.DATABASE.replace(
@@ -13,7 +11,7 @@ const DB = process.env.DATABASE.replace(
 );
 
 mongoose
-  //   .connect('mongodb://localhost:27017/todo')
+  // .connect('mongodb://localhost:27017/todo')
   .connect(DB)
   .then(() => {
     console.log('connect success');
@@ -25,30 +23,31 @@ mongoose
 const requestListener = (req, res) => {
   let body = '';
 
-  req.on('data', (chunk) => {
-    body += chunk;
-  });
+  req.on('data', (chunk) => (body += chunk));
 
-  if (req.url == '/todos' && req.method == 'GET') {
-    getTodo(res);
-  } else if (req.url == '/todos' && req.method == 'POST') {
-    req.on('end', () => {
-      postTodo(res, body);
-    });
-  } else if (req.url == '/todos' && req.method == 'DELETE') {
-    deleteTodo(res);
-  } else if (req.url.startsWith('/todos/') && req.method == 'DELETE') {
-    deleteTodo(res, req.url);
-  } else if (req.url.startsWith('/todos/') && req.method == 'PATCH') {
-    req.on('end', () => {
-      patchTodo(res, req.url, body);
-    });
-  } else if (req.method == 'OPTIONS') {
-    successHandle(res, {});
-  } else {
-    errorHandle(res, '無此路由', 404);
+  switch (req.method) {
+    case 'GET':
+      if (req.url == '/todos') getTodo(res);
+      if (req.url.startsWith('/todos/')) getTodo(res, req.url);
+      break;
+    case 'POST':
+      if (req.url == '/todos') req.on('end', () => postTodo(res, body));
+      break;
+    case 'DELETE':
+      if (req.url == '/todos') deleteTodo(res);
+      if (req.url.startsWith('/todos/')) deleteTodo(res, req.url);
+      break;
+    case 'PATCH':
+      if (req.url.startsWith('/todos/'))
+        req.on('end', () => patchTodo(res, req.url, body));
+      break;
+    case 'OPTIONS':
+      successHandle(res, {});
+      break;
+    default:
+      errorHandle(res, '無此路由', 404);
+      break;
   }
 };
 
-const server = http.createServer(requestListener);
-server.listen(process.env.PORT);
+http.createServer(requestListener).listen(process.env.PORT);
