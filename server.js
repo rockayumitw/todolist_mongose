@@ -24,22 +24,30 @@ const requestListener = (req, res) => {
   let body = '';
 
   req.on('data', (chunk) => (body += chunk));
-
   switch (req.method) {
     case 'GET':
-      if (req.url == '/todos') getTodo(res);
-      if (req.url.startsWith('/todos/')) getTodo(res, req.url);
+      if (req.url == '/todos') {
+        getTodo(res);
+      } else if (req.url.startsWith('/todos/')) {
+        getTodo(res, req.url);
+      } else errorHandle(res, '無此路由', 404);
       break;
     case 'POST':
-      if (req.url == '/todos') req.on('end', () => postTodo(res, body));
+      if (req.url == '/todos') {
+        req.on('end', () => postTodo(res, body));
+      } else errorHandle(res, '無此路由', 404);
       break;
     case 'DELETE':
-      if (req.url == '/todos') deleteTodo(res);
-      if (req.url.startsWith('/todos/')) deleteTodo(res, req.url);
+      if (req.url == '/todos') {
+        deleteTodo(res);
+      } else if (req.url.startsWith('/todos/')) {
+        deleteTodo(res, req.url);
+      } else errorHandle(res, '無此路由', 404);
       break;
     case 'PATCH':
-      if (req.url.startsWith('/todos/'))
+      if (req.url.startsWith('/todos/')) {
         req.on('end', () => patchTodo(res, req.url, body));
+      } else errorHandle(res, '無此路由', 404);
       break;
     case 'OPTIONS':
       successHandle(res, {});
