@@ -6,8 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "husky install",
-    "dev": "nodemon node server.js"
+    "prepare": "husky install"
   },
   "author": "",
   "license": "ISC",
